@@ -88,7 +88,7 @@ def write_chirp_to_file(file, chirp_number, timestamp, data):
     file.write("# --- End of Chirp ---\n\n")
 
 
-def record_measurement(num_records=50, foldername="./", measure_number=1, options=None):
+def record_measurement(num_records=50, foldername="./data/", measure_number=1, options=None):
     """
     Records a measurement consisting of `num_records` chirps, writing both header and chirp data.
     
@@ -132,7 +132,7 @@ def record_measurement(num_records=50, foldername="./", measure_number=1, option
         
     filename = radar_frequency + '_' + site_name + '_' + str(measure_id) + '_' + polarization + '_' + radar_angle + 'deg.txt'
     
-    with open(filename, 'w') as file:
+    with open(foldername + filename, 'w') as file:
         # Write the header for this measurement
         write_header(
             file, radar_frequency=radar_frequency, site_name=site_name,
