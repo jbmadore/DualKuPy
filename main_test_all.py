@@ -1,14 +1,16 @@
 import threading
 import time
 from radar.radar import init_radar, fetch_radar_data, close_radar
-from plotting.plotting import init_plot, update_plot
+from plotting.plotting import init_plot, update_plot, update_record_plot
 import matplotlib.pyplot as plt
 from data_io.file_writer import record_measurement
+from queue import Queue
 
 # Global flags and settings
 running = False  # Controls display running state
 recording_lock = threading.Lock()
-
+plot_update_queue = Queue()
+num_record_=150
 # def main():
 #     global running
 
@@ -57,20 +59,20 @@ def main():
     if ok1 and ok2:
         print(f"Radar 13GHz connected at IP address {radar1_ip}")
         print(f"Radar 17GHz connected at IP address {radar2_ip}")
-        fig, ax, lines = init_plot(("13GHz", "17GHz"), two_radar=True)
+        fig, ax, lines,dashlines = init_plot(("13GHz", "17GHz"), two_radar=True)
         
         
     elif ok1 and not ok2:
         print(f"Radar 13GHz connected at IP address {radar1_ip}")
         print(f"Failed 17GHz to connect radar at IP address {radar2_ip}")
         com2 =None
-        fig, ax, lines = init_plot("13GHz", two_radar=False)
+        fig, ax, lines,dashlines = init_plot("13GHz", two_radar=False)
         
     elif ok2 and not ok1:
         print(f"Radar 17GHz connected at IP address {radar2_ip}")
         print(f"Failed 13GHz to connect radar at IP address {radar1_ip}")
         com1=None
-        fig, ax, lines = init_plot("17GHz", two_radar=False)
+        fig, ax, lines,dashlines = init_plot("17GHz", two_radar=False)
     else:
         print("Failed to initialize both radars. Exiting...")
         return
@@ -79,7 +81,7 @@ def main():
     #fig, ax, lines = init_plot(("13GHz", "17GHz"), two_radar=True)
 
     # Start the keyboard listener in the background
-    keyboard_thread = threading.Thread(target=keyboard_listener, args=(cmd1, cmd2, com1,com2))
+    keyboard_thread = threading.Thread(target=keyboard_listener, args=(cmd1, cmd2, com1,com2,ax, dashlines))
     keyboard_thread.daemon = True
     keyboard_thread.start()
 
@@ -90,7 +92,12 @@ def main():
     close_radar(com1)
     close_radar(com2)
 
-
+def process_plot_updates():
+    while not plot_update_queue.empty():
+        update_type, ax, dashlines, *data = plot_update_queue.get()
+        if update_type == "update_record":
+            update_record_plot(ax, dashlines, *data)
+    plt.pause(0.05)
 
 def update_display(ax, lines, cmd1, cmd2, com1,com2):
     global running
@@ -142,12 +149,13 @@ def update_display(ax, lines, cmd1, cmd2, com1,com2):
             # update_plot(ax, lines, rx_values1_copol, rx_values1_crosspol, 
             #             two_radar=True, rx_values2_copol=rx_values2_copol, 
             #             rx_values2_crosspol=rx_values2_crosspol)
-            plt.pause(0.05)
+            process_plot_updates()
+            plt.pause(0.02)
 # Increment chirp count
         else:
             plt.pause(0.1)
 
-def keyboard_listener(cmd1, cmd2, com1,com2):
+def keyboard_listener(cmd1, cmd2, com1,com2,ax, dashlines):
     """Listen for keyboard events to control display and take measurements."""
 
     while True:
@@ -159,11 +167,11 @@ def keyboard_listener(cmd1, cmd2, com1,com2):
                 toggle_display()
             elif not running and not recording_lock.locked():
                 if key == "1":
-                    take_measurement(cmd1, "Radar 13GHz")
+                    take_measurement(cmd1, "Radar 13GHz", ax ,dashlines, '13GHz')
                 elif key == "2":
-                    take_measurement(cmd2, "Radar 17GHz")
+                    take_measurement(cmd2, "Radar 17GHz", ax, dashlines, '17GHz')
                 elif key == "b":
-                    take_measurement((cmd1,cmd2), "Radar 13GHz and 17GHz")
+                    take_measurement((cmd1,cmd2), "Radar 13GHz and 17GHz", ax, dashlines,'both')
                     #take_measurement(cmd2, "Radar 2")
         elif com1 and not com2:
             key = input("\nPress Enter to toggle display, or while pausing:\n 1: 13GHz Measurements\n")
@@ -172,7 +180,7 @@ def keyboard_listener(cmd1, cmd2, com1,com2):
                 toggle_display()
             elif not running and not recording_lock.locked():
                 if key == "1":
-                    take_measurement(cmd1, "Radar 13GHz")
+                    take_measurement(cmd1, "Radar 13GHz", ax, dashlines,)
                     
         elif com2 and not com1:
             key = input("\nPress Enter to toggle display, or while pausing:\n 2: 17GHz Measurements\n")
@@ -181,7 +189,7 @@ def keyboard_listener(cmd1, cmd2, com1,com2):
                 toggle_display()
             elif not running and not recording_lock.locked():
                 if key == "2":
-                    take_measurement(cmd2, "Radar 17GHz")
+                    take_measurement(cmd2, "Radar 17GHz", ax, dashlines)
                     
 def toggle_display():
     """Toggles the display between running and paused."""
@@ -204,14 +212,14 @@ def gather_recording_info():
         "additional_info": additional_info
     }
 
-def take_measurement(cmd, radar_label):
+def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
     """Takes a measurement for the specified radar when paused."""
     with recording_lock:
         recording_info = gather_recording_info()
         print(f"Starting measurement for {radar_label} at site {recording_info['site_name']} "
               f"with angle {recording_info['radar_angle']} and polarization {recording_info['polarization']}...")
         
-        if isinstance(cmd, tuple) and len(cmd)==2:
+        if measure_type=='both':
             options_1 = {
             "cmd": cmd[0],
             "site_name": '',  # Placeholder values
@@ -228,8 +236,60 @@ def take_measurement(cmd, radar_label):
             }
             options_1.update(recording_info)
             options_2.update(recording_info)
-            record_measurement(num_records=50, foldername="./", measure_number=1, options=options_1)
-            record_measurement(num_records=50, foldername="./", measure_number=1, options=options_2)
+            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options_1)
+            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options_2)
+            
+            data1 = fetch_radar_data(cmd[0])
+            data2 = fetch_radar_data(cmd[1])
+            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
+            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+            rx_values2_copol = [abs(item) for item in data2['data'][0]][0:100]
+            rx_values2_crosspol = [abs(item) for item in data2['data'][1]][0:100]
+            
+            plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, 'both',
+                                   rx_values2_copol, rx_values2_crosspol))
+
+            # update_record_plot(ax, dashlines, rx_values1_copol, rx_values1_crosspol, 
+            #         two_radar=True, rx_values2_copol=rx_values2_copol, 
+            #         rx_values2_crosspol=rx_values2_crosspol)
+        elif measure_type == "13GHz":
+            
+            options = {
+            "cmd": cmd,
+            "site_name": '',  # Placeholder values
+            "measure_id": '',
+            "polarization": '',
+            "additional_info": ""
+            }
+            options.update(recording_info)
+            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options)   
+              
+            data1 = fetch_radar_data(cmd)
+            # Process data for each radar
+            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
+            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+
+            plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, '13GHz'))
+            
+        elif measure_type == "17GHz":
+            
+            options = {
+            "cmd": cmd,
+            "site_name": '',  # Placeholder values
+            "measure_id": '',
+            "polarization": '',
+            "additional_info": ""
+            }
+            options.update(recording_info)
+            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options)   
+              
+            data1 = fetch_radar_data(cmd)
+            # Process data for each radar
+            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
+            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+
+            plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, '17GHz'))
+                        
             
         else :
             options = {
@@ -240,8 +300,18 @@ def take_measurement(cmd, radar_label):
             "additional_info": ""
             }
             options.update(recording_info)
-            record_measurement(num_records=50, foldername="./", measure_number=1, options=options)      
-                  
+            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options)   
+              
+            data1 = fetch_radar_data(cmd)
+            # Process data for each radar
+            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
+            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+
+            plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, False))
+
+            # update_record_plot(ax, dashlines, rx_values1_copol, rx_values1_crosspol, 
+            #             two_radar=False)
+            
         print(f"Measurement for {radar_label} complete.")
 
 # Run main
