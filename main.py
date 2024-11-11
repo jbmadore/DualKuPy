@@ -236,8 +236,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
             }
             options_1.update(recording_info)
             options_2.update(recording_info)
-            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options_1)
-            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options_2)
+            record_measurement(num_records=num_record_, foldername="./data/", measure_number=1, options=options_1)
+            record_measurement(num_records=num_record_, foldername="./data/", measure_number=1, options=options_2)
             
             data1 = fetch_radar_data(cmd[0])
             data2 = fetch_radar_data(cmd[1])
@@ -262,7 +262,7 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
             "additional_info": ""
             }
             options.update(recording_info)
-            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options)   
+            record_measurement(num_records=num_record_, foldername="./data/", measure_number=1, options=options)   
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
@@ -281,7 +281,7 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
             "additional_info": ""
             }
             options.update(recording_info)
-            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options)   
+            record_measurement(num_records=num_record_, foldername="./data/", measure_number=1, options=options)   
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
@@ -300,7 +300,7 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
             "additional_info": ""
             }
             options.update(recording_info)
-            record_measurement(num_records=num_record_, foldername="./data/calibration_pre_campagne_nov/", measure_number=1, options=options)   
+            record_measurement(num_records=num_record_, foldername="./data/", measure_number=1, options=options)   
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar

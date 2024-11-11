@@ -24,16 +24,16 @@ def init_plot(radar_wavelength, two_radar=False):
         wavelength1, wavelength2 = radar_wavelength
         
         # Initialize lines for each radar with co-pol and cross-pol
-        line1_copol, = ax[0].plot([], [], 'r-', label="Co-Polarization")
-        line1_crosspol, = ax[0].plot([], [], 'b-', label="Cross-Polarization")
-        dashline1_copol, = ax[0].plot([], [], 'r--', label="Recorded Co-Polarization")
-        dashline1_crosspol, = ax[0].plot([], [], 'b--', label="Recorded Cross-Polarization")
+        line1_copol, = ax[0].plot([], [], 'b-', label="Co-Polarization")
+        line1_crosspol, = ax[0].plot([], [], 'r-', label="Cross-Polarization")
+        dashline1_copol, = ax[0].plot([], [], 'b--', label="Recorded Co-Polarization")
+        dashline1_crosspol, = ax[0].plot([], [], 'r--', label="Recorded Cross-Polarization")
         
         
-        line2_copol, = ax[1].plot([], [], 'r-', label="Co-Polarization")
-        line2_crosspol, = ax[1].plot([], [], 'b-', label="Cross-Polarization")
-        dashline2_copol, = ax[1].plot([], [], 'r--', label="Recorded Co-Polarization")
-        dashline2_crosspol, = ax[1].plot([], [], 'b--', label="Recorded Cross-Polarization")
+        line2_copol, = ax[1].plot([], [], 'b-', label="Co-Polarization")
+        line2_crosspol, = ax[1].plot([], [], 'r-', label="Cross-Polarization")
+        dashline2_copol, = ax[1].plot([], [], 'b--', label="Recorded Co-Polarization")
+        dashline2_crosspol, = ax[1].plot([], [], 'r--', label="Recorded Cross-Polarization")
         
         # Set axis limits and titles
         ax[0].set_title(f"Radar 1 - {wavelength1}")
@@ -57,10 +57,10 @@ def init_plot(radar_wavelength, two_radar=False):
 
     else:
         # Single radar setup with co-pol and cross-pol lines
-        line_copol, = ax.plot([], [], 'r-', label="Co-Polarization")
-        line_crosspol, = ax.plot([], [], 'b-', label="Cross-Polarization")
-        dashline_copol, = ax[0].plot([], [], 'r--', label="Recorded Co-Polarization")
-        dashline_crosspol, = ax[0].plot([], [], 'b--', label="Recorded Cross-Polarization")    
+        line_copol, = ax.plot([], [], 'b-', label="Co-Polarization")
+        line_crosspol, = ax.plot([], [], 'r-', label="Cross-Polarization")
+        dashline_copol, = ax.plot([], [], 'b--', label="Recorded Co-Polarization")
+        dashline_crosspol, = ax.plot([], [], 'r--', label="Recorded Cross-Polarization")    
         
         ax.set_title(f"Radar - {radar_wavelength}")
         # Set axis limits and title
@@ -97,14 +97,15 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
     
     if two_radar:
         # Update Radar 1 lines
-        line1_copol, line1_crosspol = lines[0]
+        line1_crosspol, line1_copol = lines[0]
+        #line1_copol, line1_crosspol = lines[0]
         line1_copol.set_xdata(range(len(rx_values_copol)))
         line1_copol.set_ydata(rx_values_copol)
         line1_crosspol.set_xdata(range(len(rx_values_crosspol)))
         line1_crosspol.set_ydata(rx_values_crosspol)
         
         # Update Radar 2 lines
-        line2_copol, line2_crosspol = lines[1]
+        line2_crosspol, line2_copol = lines[1]
         line2_copol.set_xdata(range(len(rx_values2_copol)))
         line2_copol.set_ydata(rx_values2_copol)
         line2_crosspol.set_xdata(range(len(rx_values2_crosspol)))
@@ -117,7 +118,8 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         
     else:
         # Single radar case
-        line_copol, line_crosspol = lines
+        line_crosspol, line_copol = lines
+        #line_copol, line_crosspol = lines
         line_copol.set_xdata(range(len(rx_values_copol)))
         line_copol.set_ydata(rx_values_copol)
         line_crosspol.set_xdata(range(len(rx_values_crosspol)))
@@ -148,14 +150,16 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
     #print(dashlines)
     if two_radar and measure_type == 'both':
         # Update Radar 1 lines
-        line1_copol, line1_crosspol = dashlines[0]
+        line1_crosspol, line1_copol = dashlines[0]
+        #line1_copol, line1_crosspol = dashlines[0]
         line1_copol.set_xdata(range(len(rx_values_copol)))
         line1_copol.set_ydata(rx_values_copol)
         line1_crosspol.set_xdata(range(len(rx_values_crosspol)))
         line1_crosspol.set_ydata(rx_values_crosspol)
         
         # Update Radar 2 lines
-        line2_copol, line2_crosspol = dashlines[1]
+        line2_crosspol, line2_copol = dashlines[1]
+        #line2_copol, line2_crosspol = dashlines[1]
         line2_copol.set_xdata(range(len(rx_values2_copol)))
         line2_copol.set_ydata(rx_values2_copol)
         line2_crosspol.set_xdata(range(len(rx_values2_crosspol)))
@@ -168,7 +172,8 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
             
     elif two_radar and measure_type == '13GHz':
         # Update Radar 1 lines
-        line1_copol, line1_crosspol = dashlines[0]
+        line1_crosspol, line1_copol = dashlines[0]
+        #line1_copol, line1_crosspol = dashlines[0]
         line1_copol.set_xdata(range(len(rx_values_copol)))
         line1_copol.set_ydata(rx_values_copol)
         line1_crosspol.set_xdata(range(len(rx_values_crosspol)))
@@ -179,7 +184,8 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
 
     elif two_radar and measure_type == '17GHz':
         # Update Radar 1 lines
-        line2_copol, line2_crosspol = dashlines[1]
+        line2_crosspol, line2_copol = dashlines[1]
+        #line2_copol, line2_crosspol = dashlines[1]
         line2_copol.set_xdata(range(len(rx_values_copol)))
         line2_copol.set_ydata(rx_values_copol)
         line2_crosspol.set_xdata(range(len(rx_values_crosspol)))
@@ -191,7 +197,8 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         
     else:
         # Single radar case
-        line_copol, line_crosspol = dashlines
+        line_crosspol, line_copol = dashlines
+        #line_copol, line_crosspol = dashlines
         line_copol.set_xdata(range(len(rx_values_copol)))
         line_copol.set_ydata(rx_values_copol)
         line_crosspol.set_xdata(range(len(rx_values_crosspol)))
@@ -203,24 +210,3 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
     
     plt.draw()
     
-# def init_plot():
-#     plt.ion()
-#     fig, (ax,ax2 = plt.subplots(1,2)
-#     line_copol, = ax.plot([], [], 'r-')
-#     line_crosspol, = ax.plot([], [], 'b-')
-#     ax.set_ylim((0, 20000))
-#     ax.set_xlim((0, 100))
-    
-#     line_copol, = ax.plot([], [], 'r-')
-#     line_crosspol, = ax.plot([], [], 'b-')
-#     ax.set_ylim((0, 20000))
-#     ax.set_xlim((0, 100))
-#     return fig, ax, line_copol, line_crosspol
-
-# def update_plot(ax, line_copol, line_crosspol, rx_values_copol, rx_values_crosspol):
-#     line_copol.set_xdata(range(len(rx_values_copol)))
-#     line_copol.set_ydata(rx_values_copol)
-#     line_crosspol.set_xdata(range(len(rx_values_crosspol)))
-#     line_crosspol.set_ydata(rx_values_crosspol)
-#     ax.relim()
-#     ax.autoscale_view()
