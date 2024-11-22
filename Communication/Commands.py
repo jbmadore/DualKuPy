@@ -26,6 +26,7 @@ CMD_GET_RADAR_RESOLUTION        = "CMD_GET_RADAR_RESOLUTION"
 CMD_GET_FRONTEND_PARAMS         = "CMD_GET_FRONTEND_PARAMS"
 CMD_SET_FRONTEND_PARAMS         = "CMD_SET_FRONTEND_PARAMS"
 CMD_SET_FRONTEND_PARAMS_NO_EEP  = "CMD_SET_FRONTEND_PARAMS_NO_EEP"
+CMD_GET_FE_SENSORS              = "CMD_GET_FE_SENSORS"    # added to get the sensor temperature Nov 22nd 2022
 CMD_RESET_FRONTEND_PARAMS       = "CMD_RESET_FRONTEND_PARAMS"
 CMD_RESET_FRONTEND              = "CMD_RESET_FRONTEND"
 CMD_GET_ETHERNET_CONFIG         = "CMD_GET_ETHERNET_CONFIG"
@@ -133,6 +134,8 @@ class Commands(object):
         self.cmd_list[CMD_SET_FRONTEND_PARAMS_NO_EEP] = (0x8011, self.cmd_setFrontendParams)
         self.cmd_list[CMD_RESET_FRONTEND_PARAMS]    = (0x0012, self.cmd_resetFrontendParams)
         self.cmd_list[CMD_RESET_FRONTEND]           = (0x0013, self.cmd_resetFrontend)
+        self.cmd_list[CMD_GET_FE_SENSORS]           = (0xFE01, self.cmd_getFeSensors)   # added to get the sensor temperature Nov 22nd 2022
+        
         
         self.cmd_list[CMD_GET_ETHERNET_CONFIG]      = (0x0020, self.cmd_getEthernetConfig)
         self.cmd_list[CMD_SET_ETHERNET_CONFIG]      = (0x0021, self.cmd_setEthernetConfig)
@@ -499,6 +502,36 @@ class Commands(object):
         fp.OptParam4            = self.myInterface.RxI16()
         return fp
 
+    '-----------------------------------------------------------------------------'
+    def cmd_getFeSensors(self):
+        """
+        Fetch the frontend sensor data from the radar.
+        Host -> Radar: Command ID (0xFE01) + CRC
+        Radar -> Host: Command ID + Status Word + 4 FeSensor Values + CRC
+        """
+        # Command ID for FeSensor reading
+        command_id = 0xFE01
+        
+        # Send Command ID
+        self.myInterface.TxU16(command_id)
+        
+        # Transmit command
+        self.Transceive(18)  # Expecting 18 bytes in response (2 + 4 + 4*4 + 2)
+
+        # Read response
+        response = {}
+        response["CommandID"] = self.myInterface.RxU16()
+        response["StatusWord"] = self.myInterface.RxI32()
+        response["FeSensor_1"] = self.myInterface.RxI32()
+        response["FeSensor_2"] = self.myInterface.RxI32()
+        response["FeSensor_3"] = self.myInterface.RxI32()
+        response["FeSensor_4"] = self.myInterface.RxI32()
+        
+        # Return the parsed response
+        return response
+        
+        
+        
     '-----------------------------------------------------------------------------'
     def cmd_setFrontendParams(self, fp=None):
         update = True
