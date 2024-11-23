@@ -37,7 +37,7 @@ def main():
     data1 = fetch_radar_data(cmd1)
     data2 = fetch_radar_data(cmd2)
 
-    recoring_info    {
+    recoring_info  =  {
         "site_name": site_name,
         "radar_angle": radar_angle,
         "polarization": polarization,
