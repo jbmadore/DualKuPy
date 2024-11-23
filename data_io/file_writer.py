@@ -2,7 +2,7 @@ import datetime
 from Communication import Commands
 from radar import radar
 
-def write_header(file, radar_frequency, site_name, radar_angle, measure_id, polarization, infoParams, frontendParams, radarParams, additional_info=None):
+def write_header(file, radar_frequency, site_name, radar_angle, measure_id, polarization, infoParams, frontendParams, radarParams, sensor_temp, additional_info=None):
     """
     Writes a detailed header for a measurement session to the file, including radar configuration and parameters.
     
@@ -51,6 +51,7 @@ def write_header(file, radar_frequency, site_name, radar_angle, measure_id, pola
     file.write(f"# Ramp Time: {frontendParams.RampTime}\n")
     file.write(f"# Ramp Reset: {frontendParams.RampReset}\n")
     file.write(f"# Ramp Delay: {frontendParams.RampDelay}\n")
+    file.write(f"# Sensor temperature: {sensor_temp}\n")
     
     # Radar parameters
     file.write(f"# Radar Cube: {radarParams.RadarCube}\n")
@@ -88,7 +89,7 @@ def write_chirp_to_file(file, chirp_number, timestamp, data):
     file.write("# --- End of Chirp ---\n\n")
 
 
-def record_measurement(num_records=50, foldername="./data/", measure_number=1, options=None):
+def record_measurement(num_records=50, foldername="./data/", measure_number=1, options=None, fullname=None):
     """
     Records a measurement consisting of `num_records` chirps, writing both header and chirp data.
     
@@ -112,6 +113,9 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
 
     # Extract parameters from options with defaults if they aren't provided
     cmd = options.get("cmd")
+    
+    sensor_temp = cmd.executeCmd(Commands.CMD_GET_FE_SENSORS)
+    
     site_name = options.get("site_name")
     measure_id = options.get("measure_id")
     radar_angle = options.get("radar_angle")
@@ -131,14 +135,15 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
         radar_frequency = '17GHz'
         
     filename = radar_frequency + '_' + site_name + '_' + str(measure_id) + '_' + polarization + '_' + radar_angle + 'deg.txt'
-    
-    with open(foldername + filename, 'w') as file:
+    if fullname == None:
+        fullname = foldername + filename
+    with open(fullname, 'w') as file:
         # Write the header for this measurement
         write_header(
             file, radar_frequency=radar_frequency, site_name=site_name,
             radar_angle=radar_angle, measure_id=measure_number, 
             polarization=polarization, infoParams=infoParams, 
-            frontendParams=frontendParams, radarParams=radarParams, 
+            frontendParams=frontendParams, radarParams=radarParams, sensor_temp=sensor_temp,
             additional_info=additional_info
         )
         
