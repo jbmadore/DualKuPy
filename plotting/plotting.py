@@ -130,6 +130,7 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         ax.autoscale_view()
     
     plt.draw()
+    plt.pause(0.01)
 
 def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol, 
                        two_radar=False, measure_type=None, rx_values2_copol=None, rx_values2_crosspol=None, ):
@@ -209,4 +210,5 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         ax.autoscale_view()
     
     plt.draw()
+    plt.pause(0.01)
     

@@ -5,7 +5,11 @@ from plotting.plotting import init_plot, update_plot, update_record_plot
 import matplotlib.pyplot as plt
 from data_io.file_writer import record_measurement
 from queue import Queue
+import matplotlib
+import os
+os.environ["QT_QPA_PLATFORM"] = "xcb"
 
+matplotlib.use("TkAgg")
 # Global flags and settings
 running = False  # Controls display running state
 recording_lock = threading.Lock()
