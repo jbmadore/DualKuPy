@@ -502,7 +502,7 @@ class Commands(object):
         fp.OptParam4            = self.myInterface.RxI16()
         return fp
 
-    '-----------------------------------------------------------------------------'
+    # '-----------------------------------------------------------------------------'
     def cmd_getFeSensors(self):
         """
         Fetch the frontend sensor data from the radar.
@@ -530,8 +530,64 @@ class Commands(object):
         # Return the parsed response
         return response
         
+    # def cmd_getFeSensors(self):
+    #     """
+    #     Fetch the frontend sensor data from the radar.
+    #     Host -> Radar: Command ID (0xFE01) + CRC
+    #     Radar -> Host: Command ID + Status Word + 4 FeSensor Values + CRC
+    #     """
+    #     # Command ID for FeSensor reading
+    #     command_id = 0xFE01
         
+    #     # Send Command ID with CRC
+    #     print(f"Sending command ID: {command_id}")
+    #     self.myInterface.TxU16(command_id)
+    #     self.myInterface.TxU16(self.calculate_crc(command_id))  # Send CRC checksum
+    #     print("Command sent successfully.")
         
+    #     # Transmit and receive response
+    #     try:
+    #         self.Transceive(22)  # Expecting 22 bytes in response
+    #         print("Response received.")
+    #     except Exception as e:
+    #         print(f"Error during Transceive: {e}")
+    #         raise Exception("Radar did not respond to CMD_TEST_FRONTEND_1")
+        
+    #     # Parse response
+    #     try:
+    #         response = {
+    #             "CommandID": self.myInterface.RxU16(),
+    #             "StatusWord": self.myInterface.RxU16(),
+    #             "FeSensor_1": self.myInterface.RxI32(),
+    #             "FeSensor_2": self.myInterface.RxI32(),
+    #             "FeSensor_3": self.myInterface.RxI32(),
+    #             "FeSensor_4": self.myInterface.RxI32(),
+    #             "CRC": self.myInterface.RxU16(),
+    #         }
+    #         print(f"Parsed response: {response}")
+            
+    #         # Verify CRC
+    #         expected_crc = self.calculate_crc(response["CommandID"])
+    #         if response["CRC"] != expected_crc:
+    #             raise Exception(f"CRC mismatch: expected {expected_crc}, got {response['CRC']}")
+            
+    #         return response
+    #     except Exception as e:
+    #         print(f"Error parsing response: {e}")
+    #         raise Exception("Failed to parse radar response")
+
+    def calculate_crc(self, data):
+        """
+        Calculate the CRC checksum for a given data.
+        This implementation assumes a simple sum-based CRC.
+        Replace with the actual CRC algorithm used by the radar.
+        """
+        if isinstance(data, int):
+            data = data.to_bytes(2, byteorder="big")
+        crc = sum(data) & 0xFFFF  # Sum and mask to 16 bits
+        return crc
+
+            
     '-----------------------------------------------------------------------------'
     def cmd_setFrontendParams(self, fp=None):
         update = True

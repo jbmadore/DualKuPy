@@ -1,1 +1,7 @@
-data/
+# Ignore everything in the data folder
+data/*
+# But do not ignore the folder itself
+!data/
+# Ignore Python cache files
+*.pyc
+__pycache__/

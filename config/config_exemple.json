@@ -1,0 +1,17 @@
+{
+    "comments": {
+        "general": "This is a configuration file for radar measurements.",
+        "start_time": "Ensure the start time is in 'YYYY-MM-DD HH:MM:SS' format.",
+        "stop_time": "Leave stop_time blank to allow indefinite measurements."
+    },
+    "num_records": 15,
+    "site_name": "MyTestSite",
+    "radar_angle": "45",
+    "polarization": "H",
+    "measure_id": "test001",
+    "additional_info": "Initial test run",
+    "foldername": "./data/",
+    "interval_minutes": 5,
+    "start_time": "2025-01-10 15:55:00",
+    "stop_time": "2025-01-10 17:00:00"
+}
