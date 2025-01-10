@@ -1,15 +1,21 @@
+Here's the updated `README.md` tailored for the `feature/get-fe-sensors` branch based on the `radar_scheduler.py` we worked on.
 
-# DualKu Radar Measurement System
+---
 
-This project provides a Python-based solution for controlling and recording measurements from a dual-radar setup, primarily for data acquisition and display in real-time. The system is designed for snow monitoring and development, and it supports two radars at different frequencies (13GHz and 17GHz) that can operate simultaneously.
+# DualKu Radar Measurement System - Feature/Get-FE-Sensors
+
+This branch extends the **DualKu Radar Measurement System** to include a **scheduled measurement system**. The radar measurements can now be automated with configurable start and stop times, and intervals, while retaining the flexibility of manual sensor handling.
 
 ## Table of Contents
 - [Directory Structure](#directory-structure)
 - [Dependencies](#dependencies)
 - [Getting Started](#getting-started)
-- [Running the Application](#running-the-application)
+- [Running the Scheduler](#running-the-scheduler)
+- [Configuration File Format](#configuration-file-format)
 - [Files Overview](#files-overview)
 - [License](#license)
+
+---
 
 ## Directory Structure
 
@@ -18,93 +24,125 @@ project-root/
 ├── data_io/                 # Contains file handling modules
 │   ├── file_writer.py       # Module for recording measurements
 │
-├── plotting/                # Contains plotting functions
-│   ├── plotting.py          # Functions for initializing and updating plots
+├── data/                    # Data folder
 │
 ├── radar/                   # Radar communication modules
 │   ├── radar.py             # Functions for initializing and fetching radar data
 │
-├── main.py                  # Main script to run the radar measurement and display system
+├── feature/                 # Feature-specific scripts
+│   ├── radar_scheduler.py   # Scheduled radar measurement script
+│
+├── config/                  # Configuration files for experiments
+│   ├── example_config.json  # Example configuration file for scheduling
+│
 ├── requirements.txt         # Python dependencies
-└── README.md                # Project documentation
+└── README.md                # Documentation for this branch
 ```
+
+---
 
 ## Dependencies
 
 This project requires the following Python packages:
 - `matplotlib`
-- `threading`
-- `queue`
-- Any radar communication libraries needed by the radar devices (e.g., `radar_sdk`)
+- `json`
+- `datetime`
 
 To install the dependencies, run:
 ```bash
 pip install -r requirements.txt
 ```
 
+---
+
 ## Getting Started
 
-1. Clone this repository:
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/DualKuRadar.git
    cd DualKuRadar
+   git checkout feature/get-fe-sensors
    ```
 
-2. Configure radar IP addresses and ports in the `main.py` script:
-   ```python
-   radar1_ip = '192.168.0.13'
-   radar2_ip = '192.168.0.17'
-   radar1_host_port = 4100
-   radar2_host_port = 4101
-   ```
+2. **Prepare Configuration Files**:
+   - Create a configuration file for your experiment. Use the provided `config/example_config.json` as a template.
+   - Specify the start and stop times, radar parameters, and intervals for the scheduled measurements.
 
-3. Ensure that the radar devices are correctly connected and reachable on the configured IP addresses.
+3. **Ensure Radar Connectivity**:
+   - Confirm that the radar devices are accessible on the specified IP addresses and ports.
 
-   ```
+---
 
-## Running the Application
+## Running the Scheduler
 
-To run the application, simply execute:
+To run the scheduled radar measurement system:
 ```bash
-python main.py
+python feature/radar_scheduler.py config/example_config.json
 ```
 
-The application will:
-1. Initialize the two radars.
-2. Display the real-time radar data for both frequencies in separate subplots.
-3. Allow users to control data recording and display toggling via keyboard commands.
+This command:
+1. Loads the experiment configuration file.
+2. Waits for the specified start time (if provided).
+3. Collects radar data at the configured intervals until the stop time or manual interruption.
+
+---
+
+## Configuration File Format
+
+The scheduler uses a JSON configuration file to manage radar measurement parameters. Below is an example:
+
+```json
+{
+    "num_records": 150,
+    "site_name": "SnowMonitoringSite",
+    "radar_angle": "45",
+    "polarization": "H",
+    "measure_id": "experiment_001",
+    "additional_info": "Initial test run",
+    "foldername": "./data/",
+    "interval_minutes": 15,
+    "start_time": "2025-01-10 14:00:00",
+    "stop_time": "2025-01-10 15:00:00"
+}
+```
+
+### Key Parameters:
+- **`num_records`**: Number of radar pulses to record per measurement.
+- **`site_name`**: Name of the measurement site.
+- **`radar_angle`**: Radar tilt angle in degrees.
+- **`polarization`**: Polarization of the radar (e.g., "H" or "V").
+- **`measure_id`**: Identifier for the experiment.
+- **`additional_info`**: Free-form notes about the experiment.
+- **`foldername`**: Path to the folder where data will be stored.
+- **`interval_minutes`**: Time interval (in minutes) between measurements.
+- **`start_time`**: Optional; start time for the scheduler in `YYYY-MM-DD HH:MM:SS` format.
+- **`stop_time`**: Optional; stop time for the scheduler in `YYYY-MM-DD HH:MM:SS` format.
+
+---
 
 ## Files Overview
 
-### `main.py`
-The main control script that orchestrates the radar initialization, data fetching, real-time display, and recording functionality. It includes:
-- **Radar Initialization**: Sets up two radars at specified IP addresses.
-- **Plotting**: Initializes a dual-panel plot for real-time data display.
-- **Data Recording**: Enables users to record radar data via keyboard commands.
+### `feature/radar_scheduler.py`
+This script automates radar measurements based on the provided configuration:
+- Waits for the specified start time.
+- Executes radar measurements at regular intervals.
+- Stops measurements at the configured stop time or when interrupted manually.
 
 ### `radar/radar.py`
 Contains core functions for interacting with the radar hardware:
 - `init_radar`: Initializes the radar connection.
 - `fetch_radar_data`: Fetches radar data for display and recording.
-- `close_radar`: Closes the radar connection.
-
-### `plotting/plotting.py`
-Contains functions for initializing and updating the radar data display:
-- `init_plot`: Sets up plots for real-time data display.
-- `update_plot`: Updates plot with real-time radar data.
-- `update_record_plot`: Adds dashed lines to the plot to mark recorded data.
 
 ### `data_io/file_writer.py`
-Manages file-based data recording for each radar:
-- `record_measurement`: Records radar measurements into CSV format or other specified format, storing each radar pulse with data and metadata.
-
-## Controls
-
-The `keyboard_listener` function in `main.py` enables the following keyboard controls:
-- **Enter**: Toggles the display between running and paused states.
-- **1**: Records data for the 13GHz radar (if available).
-- **2**: Records data for the 17GHz radar (if available).
-- **b**: Records data from both radars simultaneously.
-
+Manages file-based data recording:
+- `record_measurement`: Saves radar measurements along with metadata.
 
 ---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+This branch focuses on **automating radar measurements** while allowing flexibility for future extensions. Let me know if further adjustments are needed! 😊
