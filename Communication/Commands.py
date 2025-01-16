@@ -26,6 +26,7 @@ CMD_GET_RADAR_RESOLUTION        = "CMD_GET_RADAR_RESOLUTION"
 CMD_GET_FRONTEND_PARAMS         = "CMD_GET_FRONTEND_PARAMS"
 CMD_SET_FRONTEND_PARAMS         = "CMD_SET_FRONTEND_PARAMS"
 CMD_SET_FRONTEND_PARAMS_NO_EEP  = "CMD_SET_FRONTEND_PARAMS_NO_EEP"
+CMD_GET_FE_SENSORS              = "CMD_GET_FE_SENSORS"    # added to get the sensor temperature Nov 22nd 2022
 CMD_RESET_FRONTEND_PARAMS       = "CMD_RESET_FRONTEND_PARAMS"
 CMD_RESET_FRONTEND              = "CMD_RESET_FRONTEND"
 CMD_GET_ETHERNET_CONFIG         = "CMD_GET_ETHERNET_CONFIG"
@@ -133,6 +134,8 @@ class Commands(object):
         self.cmd_list[CMD_SET_FRONTEND_PARAMS_NO_EEP] = (0x8011, self.cmd_setFrontendParams)
         self.cmd_list[CMD_RESET_FRONTEND_PARAMS]    = (0x0012, self.cmd_resetFrontendParams)
         self.cmd_list[CMD_RESET_FRONTEND]           = (0x0013, self.cmd_resetFrontend)
+        self.cmd_list[CMD_GET_FE_SENSORS]           = (0xFE01, self.cmd_getFeSensors)   # added to get the sensor temperature Nov 22nd 2022
+    
         
         self.cmd_list[CMD_GET_ETHERNET_CONFIG]      = (0x0020, self.cmd_getEthernetConfig)
         self.cmd_list[CMD_SET_ETHERNET_CONFIG]      = (0x0021, self.cmd_setEthernetConfig)
@@ -369,6 +372,25 @@ class Commands(object):
         return self.infoParams
 
     '-----------------------------------------------------------------------------'
+    
+    def cmd_getFeSensors(self):
+
+ 
+
+        self.Transceive(4*4)  # Expecting 16 bytes
+
+        response = {}
+
+        response["FeSensor_1"] = self.myInterface.RxI32()
+
+        response["FeSensor_2"] = self.myInterface.RxI32()
+
+        response["FeSensor_3"] = self.myInterface.RxI32()
+
+        response["FeSensor_4"] = self.myInterface.RxI32()
+
+        return response
+    
     def cmd_getSysTime(self):
         self.Transceive(8)        
         return self.myInterface.RxU64()
@@ -499,6 +521,19 @@ class Commands(object):
         fp.OptParam4            = self.myInterface.RxI16()
         return fp
 
+  
+    def calculate_crc(self, data):
+        """
+        Calculate the CRC checksum for a given data.
+        This implementation assumes a simple sum-based CRC.
+        Replace with the actual CRC algorithm used by the radar.
+        """
+        if isinstance(data, int):
+            data = data.to_bytes(2, byteorder="big")
+        crc = sum(data) & 0xFFFF  # Sum and mask to 16 bits
+        return crc
+
+            
     '-----------------------------------------------------------------------------'
     def cmd_setFrontendParams(self, fp=None):
         update = True
@@ -1261,4 +1296,3 @@ class CommandError(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
-

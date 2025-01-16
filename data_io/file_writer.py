@@ -2,7 +2,7 @@ import datetime
 from Communication import Commands
 from radar import radar
 
-def write_header(file, radar_frequency, site_name, radar_angle, measure_id, polarization, infoParams, frontendParams, radarParams, additional_info=None):
+def write_header(file, radar_frequency, site_name, radar_angle, measure_id, polarization, infoParams, frontendParams, radarParams, sensor_temp, additional_info=None):
     """
     Writes a detailed header for a measurement session to the file, including radar configuration and parameters.
     
@@ -51,6 +51,7 @@ def write_header(file, radar_frequency, site_name, radar_angle, measure_id, pola
     file.write(f"# Ramp Time: {frontendParams.RampTime}\n")
     file.write(f"# Ramp Reset: {frontendParams.RampReset}\n")
     file.write(f"# Ramp Delay: {frontendParams.RampDelay}\n")
+    file.write(f"# Sensor temperature: {sensor_temp}\n")
     
     # Radar parameters
     file.write(f"# Radar Cube: {radarParams.RadarCube}\n")
@@ -112,6 +113,8 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
 
     # Extract parameters from options with defaults if they aren't provided
     cmd = options.get("cmd")
+    sensor_temp = cmd.executeCmd(Commands.CMD_GET_FE_SENSORS)
+    sensor_temp = sensor_temp["FeSensor_1"]
     site_name = options.get("site_name")
     measure_id = options.get("measure_id")
     radar_angle = options.get("radar_angle")
@@ -139,7 +142,7 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
             radar_angle=radar_angle, measure_id=measure_number, 
             polarization=polarization, infoParams=infoParams, 
             frontendParams=frontendParams, radarParams=radarParams, 
-            additional_info=additional_info
+            additional_info=additional_info,sensor_temp=sensor_temp,
         )
         
         # Record and write each chirp
