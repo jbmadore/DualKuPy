@@ -1,0 +1,17 @@
+{
+    "comments": {
+        "general": "This is a configuration file for radar measurements.",
+        "start_time": "Ensure the start time is in 'YYYY-MM-DD HH:MM:SS' format.",
+        "stop_time": "Leave stop_time blank to allow indefinite measurements."
+    },
+    "num_records": 50,
+    "site_name": "BonzaiContinuous",
+    "radar_angle": "30",
+    "polarization": "v",
+    "measure_id": "1",
+    "additional_info": "Fist official measurement",
+    "foldername": "./data/",
+    "interval_minutes": 15,
+    "start_time": "2025-01-15 16:30:00",
+    "stop_time": "2025-01-17 17:00:00"
+}
