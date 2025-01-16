@@ -114,7 +114,7 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
     # Extract parameters from options with defaults if they aren't provided
     cmd = options.get("cmd")
     
-    #sensor_temp = cmd.executeCmd(Commands.CMD_GET_FE_SENSORS)
+    sensor_temp = cmd.executeCmd(Commands.CMD_GET_FE_SENSORS)
     
     site_name = options.get("site_name")
     measure_id = options.get("measure_id")
@@ -143,7 +143,7 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
             file, radar_frequency=radar_frequency, site_name=site_name,
             radar_angle=radar_angle, measure_id=measure_number, 
             polarization=polarization, infoParams=infoParams, 
-            frontendParams=frontendParams, radarParams=radarParams, sensor_temp='Nan',
+            frontendParams=frontendParams, radarParams=radarParams, sensor_temp=sensor_temp,
             additional_info=additional_info
         )
         
