@@ -114,7 +114,7 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
     # Extract parameters from options with defaults if they aren't provided
     cmd = options.get("cmd")
     sensor_temp = cmd.executeCmd(Commands.CMD_GET_FE_SENSORS)
-    sensor_temp = sensor_temp["FeSensor_1"]
+    #sensor_temp = sensor_temp["FeSensor_1"]
     site_name = options.get("site_name")
     measure_id = options.get("measure_id")
     radar_angle = options.get("radar_angle")
