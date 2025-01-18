@@ -43,11 +43,11 @@ def init_plot(radar_wavelength, two_radar=False):
             
             if '17GHz' in a.get_title():
                 a.set_ylim((0, 60000))
-                a.set_xlim((0, 100))
+                a.set_xlim((0, 150))
 
             elif '13GHz' in a.get_title():
                 a.set_ylim((0, 60000))
-                a.set_xlim((0, 100))
+                a.set_xlim((0, 150))
                 
             a.legend()
         return fig, ax, ((line1_copol, line1_crosspol), 
@@ -66,14 +66,14 @@ def init_plot(radar_wavelength, two_radar=False):
         # Set axis limits and title
         if '17GHz' in ax.get_title():
             ax.set_ylim((0, 60000))
-            ax.set_xlim((0, 100))
+            ax.set_xlim((0, 150))
 
         elif '13GHz' in ax.get_title():
             ax.set_ylim((0, 60000))
-            ax.set_xlim((0, 100))
+            ax.set_xlim((0, 150))
 
         # ax.set_ylim((0, 20000))
-        # ax.set_xlim((0, 100))
+        # ax.set_xlim((0, 150))
 
         ax.legend()
         
