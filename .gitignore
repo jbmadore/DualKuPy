@@ -1,1 +1,4 @@
 data/
+# Ignorer les fichiers compilés Python
+__pycache__/
+*.pyc
