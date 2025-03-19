@@ -1,11 +1,8 @@
-Here’s an updated version of your **README.md** reflecting the recent changes and improvements in your project:
-
----
 
 # **DualKu Radar Measurement System**
 
 This project provides a **Python-based system for controlling, measuring, and displaying radar data** from a **dual-radar setup (13GHz and 17GHz)**.  
-Originally designed for **snow monitoring**, this system enables **real-time data acquisition, visualization, and storage** via an interactive **LCD interface** and **automated data logging**.
+This system enables **real-time data acquisition, visualization, and storage** via an interactive **LCD interface** and **automated data logging**.
 
 ## **Table of Contents**
 - [Features](#features)
