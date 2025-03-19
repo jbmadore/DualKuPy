@@ -153,6 +153,6 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
             data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA)
             write_chirp_to_file(file,chirp_number=chirp_number, timestamp=timestamp, data=data)
             
-
+    return filename
     print(f"Measurement {measure_number} recorded to {filename}")
 
