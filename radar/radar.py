@@ -87,7 +87,7 @@ def fetch_radar_data(cmd):
     """
     try:
         # Execute the radar command to read range data for the given chirp number
-        data = cmd.executeCmd(Commands.CMD_READ_RANGE_DATA, 0)
+        data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA, 0)
         # Return the retrieved radar data
         return data
     
