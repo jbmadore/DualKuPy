@@ -89,7 +89,7 @@ def write_chirp_to_file(file, chirp_number, timestamp, data):
     file.write("# --- End of Chirp ---\n\n")
 
 
-def record_measurement(num_records=50, foldername="./data/", measure_number=1, options=None, fullname=None):
+def record_measurement(num_records=50, foldername="/home/nico/DualKuPy/data/", measure_number=1, options=None, fullname=None):
     """
     Records a measurement consisting of `num_records` chirps, writing both header and chirp data.
     
