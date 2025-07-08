@@ -86,7 +86,7 @@ def fetch_radar_data(cmd):
         dict or None: The radar data for the specified chirp if successful, or None if an error occurs.
     """
     try:
-        # Execute the radar command to read range data for the given chirp number
+        # Execute the radar command to read rqw data for the given chirp number
         data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA, 0)
         # Return the retrieved radar data
         return data
