@@ -53,11 +53,11 @@ def init_plot(radar_wavelength, two_radar=False):
             
             if '17GHz' in a.get_title():
                 a.set_ylim((0, 60000))
-                a.set_xlim((0, 100))
+                a.set_xlim((0, 5))
 
             elif '13GHz' in a.get_title():
                 a.set_ylim((0, 60000))
-                a.set_xlim((0, 100))
+                a.set_xlim((0, 5))
                 
             a.legend()
         return fig, ax, ((line1_copol, line1_crosspol), 
@@ -76,11 +76,11 @@ def init_plot(radar_wavelength, two_radar=False):
         # Set axis limits and title
         if '17GHz' in ax.get_title():
             ax.set_ylim((0, 60000))
-            ax.set_xlim((0, 100))
+            ax.set_xlim((0, 5))
 
         elif '13GHz' in ax.get_title():
             ax.set_ylim((0, 60000))
-            ax.set_xlim((0, 100))
+            ax.set_xlim((0, 5))
 
         # ax.set_ylim((0, 20000))
         # ax.set_xlim((0, 100))
@@ -125,7 +125,8 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         for a in ax:
             a.relim()
             a.autoscale_view()
-        
+            a.set_xlim((0, 5))
+            
     else:
         # Single radar case
         line_crosspol, line_copol = lines
@@ -138,7 +139,8 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         # Rescale and refresh the single plot
         ax.relim()
         ax.autoscale_view()
-    
+    	ax.set_xlim((0, 5))
+    	
     plt.draw()
     plt.pause(0.01)
 
@@ -180,6 +182,7 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         for a in ax:
             a.relim()
             a.autoscale_view()
+            a.set_xlim((0, 5))
             
     elif two_radar and measure_type == '13GHz':
         # Update Radar 1 lines
@@ -192,7 +195,8 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         
         ax[0].relim()
         ax[0].autoscale_view()
-
+        ax[0].set_xlim((0, 5))
+        
     elif two_radar and measure_type == '17GHz':
         # Update Radar 1 lines
         line2_crosspol, line2_copol = dashlines[1]
@@ -204,6 +208,7 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         
         ax[1].relim()
         ax[1].autoscale_view()
+        ax[1].set_xlim((0, 5))
         
         
     else:
@@ -218,6 +223,7 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         # Rescale and refresh the single plot
         ax.relim()
         ax.autoscale_view()
+        ax.set_xlim((0, 5))
     
     plt.draw()
     plt.pause(0.01)
