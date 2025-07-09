@@ -2,6 +2,7 @@ import threading
 import time
 from radar.radar import init_radar, fetch_radar_data, close_radar
 from plotting.plotting import init_plot, update_plot, update_record_plot
+from utils.signal_processing import fft_no_scaling
 import matplotlib.pyplot as plt
 from data_io.file_writer import record_measurement
 from queue import Queue
@@ -113,10 +114,10 @@ def update_display(ax, lines, cmd1, cmd2, com1,com2):
                 
                 data1 = fetch_radar_data(cmd1)
                 data2 = fetch_radar_data(cmd2)
-                rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-                rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
-                rx_values2_copol = [abs(item) for item in data2['data'][0]][0:100]
-                rx_values2_crosspol = [abs(item) for item in data2['data'][1]][0:100]
+                rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
+                rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
+                rx_values2_copol = fft_no_scaling(data2[:,1]).tolist()
+                rx_values2_crosspol = fft_no_scaling(data2[:,0]).tolist()
                 
                 update_plot(ax, lines, rx_values1_copol, rx_values1_crosspol, 
                         two_radar=True, rx_values2_copol=rx_values2_copol, 
@@ -126,33 +127,20 @@ def update_display(ax, lines, cmd1, cmd2, com1,com2):
             elif com1 and not com2:
                 data1 = fetch_radar_data(cmd1)
                             # Process data for each radar
-                rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-                rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+                rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
+                rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
                 
                 update_plot(ax, lines, rx_values1_copol, rx_values1_crosspol, 
                         two_radar=False)
                 
             elif com2 and not com1:
                 data2 = fetch_radar_data(cmd2)
-                rx_values2_copol = [abs(item) for item in data2['data'][0]][0:100]
-                rx_values2_crosspol = [abs(item) for item in data2['data'][1]][0:100]
+                rx_values2_copol = fft_no_scaling(data2[:,1]).tolist()
+                rx_values2_crosspol = fft_no_scaling(data2[:,0]).tolist()
                 
                 update_plot(ax, lines, rx_values2_copol, rx_values2_crosspol, 
                         two_radar=False)
-                
-            # Fetch and process data
-            # data1 = fetch_radar_data(cmd1)
-            # data2 = fetch_radar_data(cmd2)
-            # Process data for each radar
-            # rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-            # rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
-            # rx_values2_copol = [abs(item) for item in data2['data'][0]][0:100]
-            # rx_values2_crosspol = [abs(item) for item in data2['data'][1]][0:100]
 
-            # Update plot
-            # update_plot(ax, lines, rx_values1_copol, rx_values1_crosspol, 
-            #             two_radar=True, rx_values2_copol=rx_values2_copol, 
-            #             rx_values2_crosspol=rx_values2_crosspol)
             process_plot_updates()
             plt.pause(0.02)
 # Increment chirp count
@@ -245,10 +233,10 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
             
             data1 = fetch_radar_data(cmd[0])
             data2 = fetch_radar_data(cmd[1])
-            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
-            rx_values2_copol = [abs(item) for item in data2['data'][0]][0:100]
-            rx_values2_crosspol = [abs(item) for item in data2['data'][1]][0:100]
+            rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
+            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
+            rx_values2_copol = fft_no_scaling(data2[:,1]).tolist()
+            rx_values2_crosspol = fft_no_scaling(data2[:,0]).tolist()
             
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, 'both',
                                    rx_values2_copol, rx_values2_crosspol))
@@ -270,8 +258,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
-            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+            rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
+            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
 
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, '13GHz'))
             
@@ -289,8 +277,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
-            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+ 			rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
+            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
 
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, '17GHz'))
                         
@@ -308,8 +296,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
-            rx_values1_copol = [abs(item) for item in data1['data'][0]][0:100]
-            rx_values1_crosspol = [abs(item) for item in data1['data'][1]][0:100]
+ 			rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
+            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
 
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, False))
 

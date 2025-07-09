@@ -1,4 +1,14 @@
 import matplotlib.pyplot as plt
+from scipy.fft import fft, fftfreq
+from utils import freq_to_dist
+
+def getxvalues(N):
+    frequence_echantillonage = 10e6
+    T = 1 / frequence_echantillonage
+    xf = fftfreq( N, T)                        
+    
+    return freq_to_dist(xf[:N // 2])
+
 
 def init_plot(radar_wavelength, two_radar=False):
     """
@@ -43,11 +53,19 @@ def init_plot(radar_wavelength, two_radar=False):
             
             if '17GHz' in a.get_title():
                 a.set_ylim((0, 60000))
+<<<<<<< HEAD
                 a.set_xlim((0, 150))
 
             elif '13GHz' in a.get_title():
                 a.set_ylim((0, 60000))
                 a.set_xlim((0, 150))
+=======
+                a.set_xlim((0, 5))
+
+            elif '13GHz' in a.get_title():
+                a.set_ylim((0, 60000))
+                a.set_xlim((0, 5))
+>>>>>>> 6c3051ee98f534282a520b362c7019b9c750abbd
                 
             a.legend()
         return fig, ax, ((line1_copol, line1_crosspol), 
@@ -66,11 +84,11 @@ def init_plot(radar_wavelength, two_radar=False):
         # Set axis limits and title
         if '17GHz' in ax.get_title():
             ax.set_ylim((0, 60000))
-            ax.set_xlim((0, 150))
+            ax.set_xlim((0, 5))
 
         elif '13GHz' in ax.get_title():
             ax.set_ylim((0, 60000))
-            ax.set_xlim((0, 150))
+            ax.set_xlim((0, 5))
 
         # ax.set_ylim((0, 20000))
         # ax.set_xlim((0, 150))
@@ -99,36 +117,38 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         # Update Radar 1 lines
         line1_crosspol, line1_copol = lines[0]
         #line1_copol, line1_crosspol = lines[0]
-        line1_copol.set_xdata(range(len(rx_values_copol)))
+        line1_copol.set_xdata(getxvalues(len(rx_values_copol)))        ## N*2 Car fft_no_scaling renvoie que la partie positive du calcul de fft. il faut donc doubler le nombre de bins pour avoir les bonnes fréquences ie les bonnes distances.
         line1_copol.set_ydata(rx_values_copol)
-        line1_crosspol.set_xdata(range(len(rx_values_crosspol)))
+        line1_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
         line1_crosspol.set_ydata(rx_values_crosspol)
         
         # Update Radar 2 lines
         line2_crosspol, line2_copol = lines[1]
-        line2_copol.set_xdata(range(len(rx_values2_copol)))
+        line2_copol.set_xdata(getxvalues(len(rx_values2_copol)))
         line2_copol.set_ydata(rx_values2_copol)
-        line2_crosspol.set_xdata(range(len(rx_values2_crosspol)))
+        line2_crosspol.set_xdata(getxvalues(len(rx_values2_crosspol)))
         line2_crosspol.set_ydata(rx_values2_crosspol)
         
         # Rescale and refresh each subplot
         for a in ax:
             a.relim()
             a.autoscale_view()
-        
+            a.set_xlim((0, 5))
+            
     else:
         # Single radar case
         line_crosspol, line_copol = lines
         #line_copol, line_crosspol = lines
-        line_copol.set_xdata(range(len(rx_values_copol)))
+        line_copol.set_xdata(getxvalues(len(rx_values_copol)))
         line_copol.set_ydata(rx_values_copol)
-        line_crosspol.set_xdata(range(len(rx_values_crosspol)))
+        line_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
         line_crosspol.set_ydata(rx_values_crosspol)
         
         # Rescale and refresh the single plot
         ax.relim()
         ax.autoscale_view()
-    
+    	ax.set_xlim((0, 5))
+    	
     plt.draw()
     plt.pause(0.01)
 
@@ -153,61 +173,65 @@ def update_record_plot(ax, dashlines, rx_values_copol, rx_values_crosspol,
         # Update Radar 1 lines
         line1_crosspol, line1_copol = dashlines[0]
         #line1_copol, line1_crosspol = dashlines[0]
-        line1_copol.set_xdata(range(len(rx_values_copol)))
+        line1_copol.set_xdata(getxvalues(len(rx_values_copol)))
         line1_copol.set_ydata(rx_values_copol)
-        line1_crosspol.set_xdata(range(len(rx_values_crosspol)))
+        line1_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
         line1_crosspol.set_ydata(rx_values_crosspol)
         
         # Update Radar 2 lines
         line2_crosspol, line2_copol = dashlines[1]
         #line2_copol, line2_crosspol = dashlines[1]
-        line2_copol.set_xdata(range(len(rx_values2_copol)))
+        line2_copol.set_xdata(getxvalues(len(rx_values2_copol)))
         line2_copol.set_ydata(rx_values2_copol)
-        line2_crosspol.set_xdata(range(len(rx_values2_crosspol)))
+        line2_crosspol.set_xdata(getxvalues(len(rx_values2_crosspol)))
         line2_crosspol.set_ydata(rx_values2_crosspol)
         
         # Rescale and refresh each subplot
         for a in ax:
             a.relim()
             a.autoscale_view()
+            a.set_xlim((0, 5))
             
     elif two_radar and measure_type == '13GHz':
         # Update Radar 1 lines
         line1_crosspol, line1_copol = dashlines[0]
         #line1_copol, line1_crosspol = dashlines[0]
-        line1_copol.set_xdata(range(len(rx_values_copol)))
+        line1_copol.set_xdata(getxvalues(len(rx_values_copol)))
         line1_copol.set_ydata(rx_values_copol)
-        line1_crosspol.set_xdata(range(len(rx_values_crosspol)))
+        line1_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
         line1_crosspol.set_ydata(rx_values_crosspol)
         
         ax[0].relim()
         ax[0].autoscale_view()
-
+        ax[0].set_xlim((0, 5))
+        
     elif two_radar and measure_type == '17GHz':
         # Update Radar 1 lines
         line2_crosspol, line2_copol = dashlines[1]
         #line2_copol, line2_crosspol = dashlines[1]
-        line2_copol.set_xdata(range(len(rx_values_copol)))
+        line2_copol.set_xdata(getxvalues(len(rx_values_copol)))
         line2_copol.set_ydata(rx_values_copol)
-        line2_crosspol.set_xdata(range(len(rx_values_crosspol)))
+        line2_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
         line2_crosspol.set_ydata(rx_values_crosspol)
         
         ax[1].relim()
         ax[1].autoscale_view()
+        ax[1].set_xlim((0, 5))
         
         
     else:
         # Single radar case
         line_crosspol, line_copol = dashlines
         #line_copol, line_crosspol = dashlines
-        line_copol.set_xdata(range(len(rx_values_copol)))
+        line_copol.set_xdata(getxvalues(len(rx_values_copol)))
         line_copol.set_ydata(rx_values_copol)
-        line_crosspol.set_xdata(range(len(rx_values_crosspol)))
+        line_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
         line_crosspol.set_ydata(rx_values_crosspol)
         
         # Rescale and refresh the single plot
         ax.relim()
         ax.autoscale_view()
+        ax.set_xlim((0, 5))
     
     plt.draw()
     plt.pause(0.01)

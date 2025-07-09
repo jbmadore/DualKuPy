@@ -1,4 +1,5 @@
 import Parameters as Pars
+import numpy
 from Communication import Commands, EthernetInterfaces
 
 def init_radar(ip_address, udp_port=4120, host_port=4100):
@@ -86,16 +87,24 @@ def fetch_radar_data(cmd):
         dict or None: The radar data for the specified chirp if successful, or None if an error occurs.
     """
     try:
-        # Execute the radar command to read range data for the given chirp number
-        data = cmd.executeCmd(Commands.CMD_READ_RANGE_DATA, 0)
+        # Execute the radar command to read rqw data for the given chirp number
+        data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA, 0)
+        
+        data_cplx = np.zeros((1024, 2), dtype=np.complex_)
+        
+        data_cplx[:, 0] = (data['data'][0] + 1j * data['data'][1])        #crosspol
+        data_cplx[:, 1] = (data['data'][2] + 1j * data['data'][3])		  #copol
+       
+        
         # Return the retrieved radar data
-        return data
+        return data_cplx
     
     except Exception as e:
         # Handle any errors that occur during data retrieval and print an error message
         print(f"Error reading radar data: {e}")
         # Return None if there was an error, indicating failure to fetch data
         return None
+	
 
 
 def close_radar(com):
