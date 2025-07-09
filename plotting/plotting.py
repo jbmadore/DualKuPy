@@ -53,19 +53,12 @@ def init_plot(radar_wavelength, two_radar=False):
             
             if '17GHz' in a.get_title():
                 a.set_ylim((0, 60000))
-<<<<<<< HEAD
-                a.set_xlim((0, 150))
-
-            elif '13GHz' in a.get_title():
-                a.set_ylim((0, 60000))
-                a.set_xlim((0, 150))
-=======
                 a.set_xlim((0, 5))
 
             elif '13GHz' in a.get_title():
                 a.set_ylim((0, 60000))
                 a.set_xlim((0, 5))
->>>>>>> 6c3051ee98f534282a520b362c7019b9c750abbd
+
                 
             a.legend()
         return fig, ax, ((line1_copol, line1_crosspol), 
