@@ -1,5 +1,5 @@
 import Parameters as Pars
-import numpy
+import numpy as np
 from Communication import Commands, EthernetInterfaces
 
 def init_radar(ip_address, udp_port=4120, host_port=4100):
@@ -90,10 +90,10 @@ def fetch_radar_data(cmd):
         # Execute the radar command to read rqw data for the given chirp number
         data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA, 0)
         
-        data_cplx = np.zeros((1024, 2), dtype=np.complex_)
+        data_cplx = np.zeros((1024, 2), dtype=np.complex128)
         
-        data_cplx[:, 0] = (data['data'][0] + 1j * data['data'][1])        #crosspol
-        data_cplx[:, 1] = (data['data'][2] + 1j * data['data'][3])		  #copol
+        data_cplx[:, 0] = (np.asarray(data['data'][0]) + 1j * np.asarray(data['data'][1]))        #crosspol
+        data_cplx[:, 1] = (np.asarray(data['data'][2]) + 1j * np.asarray(data['data'][3]))		  #copol
        
         
         # Return the retrieved radar data

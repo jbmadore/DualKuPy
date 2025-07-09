@@ -17,16 +17,15 @@ def kai(N, beta):
     S2 = np.sum(window * window)
     return window, S1, S2
 
-def fft_no_scaling(data_array,beta=0,pad_factor=1):
+def fft_no_scaling(data_array,beta=2,pad_factor=2):
     frequence_echantillonage = 10e6
     N = 1024
     T = 1 / frequence_echantillonage
     N_padded = N * pad_factor
 
-    kaiwindow, s1, s2 = kai(N, self.beta)
+    kaiwindow, s1, s2 = kai(N, beta)
     
     data_padded_windowed = np.pad(data_array * kaiwindow, (0, N_padded - N), 'constant')
-    
     fft_result = fft(data_padded_windowed)
     
     #xf = fftfreq(N_padded, T)

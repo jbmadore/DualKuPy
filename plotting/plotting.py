@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 from scipy.fft import fft, fftfreq
-from utils import freq_to_dist
+from utils.signal_processing import freq_to_dist
 
 def getxvalues(N):
     frequence_echantillonage = 10e6
     T = 1 / frequence_echantillonage
     xf = fftfreq( N, T)                        
     
-    return freq_to_dist(xf[:N // 2])
+    return freq_to_dist(xf[:N // 2])  
 
 
 def init_plot(radar_wavelength, two_radar=False):
@@ -110,16 +110,16 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         # Update Radar 1 lines
         line1_crosspol, line1_copol = lines[0]
         #line1_copol, line1_crosspol = lines[0]
-        line1_copol.set_xdata(getxvalues(len(rx_values_copol)))        ## N*2 Car fft_no_scaling renvoie que la partie positive du calcul de fft. il faut donc doubler le nombre de bins pour avoir les bonnes fréquences ie les bonnes distances.
+        line1_copol.set_xdata(getxvalues(2*len(rx_values_copol)))      ## N*2 Car fft_no_scaling renvoie que la partie positive du calcul de fft. il faut donc doubler le nombre de bins pour avoir les bonnes fréquences ie les bonnes distances. 
         line1_copol.set_ydata(rx_values_copol)
-        line1_crosspol.set_xdata(getxvalues(len(rx_values_crosspol)))
+        line1_crosspol.set_xdata(getxvalues(2*len(rx_values_crosspol)))
         line1_crosspol.set_ydata(rx_values_crosspol)
         
         # Update Radar 2 lines
         line2_crosspol, line2_copol = lines[1]
-        line2_copol.set_xdata(getxvalues(len(rx_values2_copol)))
+        line2_copol.set_xdata(getxvalues(2*len(rx_values2_copol)))
         line2_copol.set_ydata(rx_values2_copol)
-        line2_crosspol.set_xdata(getxvalues(len(rx_values2_crosspol)))
+        line2_crosspol.set_xdata(getxvalues(2*len(rx_values2_crosspol)))
         line2_crosspol.set_ydata(rx_values2_crosspol)
         
         # Rescale and refresh each subplot
@@ -140,7 +140,7 @@ def update_plot(ax, lines, rx_values_copol, rx_values_crosspol, two_radar=False,
         # Rescale and refresh the single plot
         ax.relim()
         ax.autoscale_view()
-    	ax.set_xlim((0, 5))
+        ax.set_xlim((0, 5))
     	
     plt.draw()
     plt.pause(0.01)
