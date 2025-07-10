@@ -130,16 +130,16 @@ def update_display(ax, lines, cmd1, cmd2, com1,com2):
             elif com1 and not com2:
                 data1 = fetch_radar_data(cmd1)
                             # Process data for each radar
-                rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
-                rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
+                rx_values1_copol = np.abs(fft_no_scaling(data1[:,1])).tolist()
+                rx_values1_crosspol = np.abs(fft_no_scaling(data1[:,0])).tolist()
                 
                 update_plot(ax, lines, rx_values1_copol, rx_values1_crosspol, 
                         two_radar=False)
                 
             elif com2 and not com1:
                 data2 = fetch_radar_data(cmd2)
-                rx_values2_copol = fft_no_scaling(data2[:,1]).tolist()
-                rx_values2_crosspol = fft_no_scaling(data2[:,0]).tolist()
+                rx_values2_copol = np.abs(fft_no_scaling(data2[:,1])).tolist()
+                rx_values2_crosspol = np.abs(fft_no_scaling(data2[:,0])).tolist()
                 
                 update_plot(ax, lines, rx_values2_copol, rx_values2_crosspol, 
                         two_radar=False)
@@ -236,10 +236,10 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
             
             data1 = fetch_radar_data(cmd[0])
             data2 = fetch_radar_data(cmd[1])
-            rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
-            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
-            rx_values2_copol = fft_no_scaling(data2[:,1]).tolist()
-            rx_values2_crosspol = fft_no_scaling(data2[:,0]).tolist()
+            rx_values1_copol = np.abs(fft_no_scaling(data1[:,1])).tolist()
+            rx_values1_crosspol = np.abs(fft_no_scaling(data1[:,0])).tolist()
+            rx_values2_copol = np.abs(fft_no_scaling(data2[:,1])).tolist()
+            rx_values2_crosspol = np.abs(fft_no_scaling(data2[:,0])).tolist()
             
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, 'both',
                                    rx_values2_copol, rx_values2_crosspol))
@@ -261,8 +261,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
-            rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
-            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
+            rx_values1_copol = np.abs(fft_no_scaling(data1[:,1])).tolist()
+            rx_values1_crosspol = np.abs(fft_no_scaling(data1[:,0])).tolist()
 
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, '13GHz'))
             
@@ -280,8 +280,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
-            rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
-            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
+            rx_values1_copol = np.abs(fft_no_scaling(data1[:,1])).tolist()
+            rx_values1_crosspol = np.abs(fft_no_scaling(data1[:,0])).tolist()
 
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, True, '17GHz'))
                         
@@ -299,8 +299,8 @@ def take_measurement(cmd, radar_label,ax, dashlines, measure_type=None):
               
             data1 = fetch_radar_data(cmd)
             # Process data for each radar
-            rx_values1_copol = fft_no_scaling(data1[:,1]).tolist()
-            rx_values1_crosspol = fft_no_scaling(data1[:,0]).tolist()
+            rx_values1_copol = np.abs(fft_no_scaling(data1[:,1])).tolist()
+            rx_values1_crosspol = np.abs(fft_no_scaling(data1[:,0])).tolist()
 
             plot_update_queue.put(("update_record", ax, dashlines, rx_values1_copol, rx_values1_crosspol, False))
 

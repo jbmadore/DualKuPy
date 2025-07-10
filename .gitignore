@@ -1,1 +1,11 @@
 data/
+
+# Auto-added __pycache__ paths
+./Communication/__pycache__/
+./__pycache__/
+./data_io/__pycache__/
+./listener/__pycache__/
+./plotting/__pycache__/
+./radar/__pycache__/
+./recording/__pycache__/
+./utils/__pycache__/
