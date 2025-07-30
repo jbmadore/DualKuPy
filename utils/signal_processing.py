@@ -17,7 +17,7 @@ def kai(N, beta):
     S2 = np.sum(window * window)
     return window, S1, S2
 
-def fft_no_scaling(data_array,beta=8,pad_factor=4):
+def fft_no_scaling(data_array,beta=10,pad_factor=3):
     frequence_echantillonage = 10e6
     N = 1024
     T = 1 / frequence_echantillonage
