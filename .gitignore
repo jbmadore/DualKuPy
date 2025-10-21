@@ -9,3 +9,14 @@ data/
 ./radar/__pycache__/
 ./recording/__pycache__/
 ./utils/__pycache__/
+
+# Ignore all Python bytecode and cache folders
+__pycache__/
+*.py[cod]
+
+# (Optional) ignore build and environment artifacts
+*.pyo
+*.pyd
+*.so
+.env/
+venv/

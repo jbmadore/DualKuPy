@@ -53,11 +53,11 @@ def init_plot(radar_wavelength, two_radar=False):
         for a in ax:
             
             if '17GHz' in a.get_title():
-                a.set_ylim((0, 60000))
+                a.set_ylim((0, 5000))
                 a.set_xlim((0, 5))
 
             elif '13GHz' in a.get_title():
-                a.set_ylim((0, 60000))
+                a.set_ylim((0, 5000))
                 a.set_xlim((0, 5))
 
                 
@@ -77,11 +77,11 @@ def init_plot(radar_wavelength, two_radar=False):
         ax.set_title(f"Radar - {radar_wavelength}")
         # Set axis limits and title
         if '17GHz' in ax.get_title():
-            ax.set_ylim((0, 200000))
+            ax.set_ylim((0, 5000))
             ax.set_xlim((0, 5))
 
         elif '13GHz' in ax.get_title():
-            ax.set_ylim((0, 200000))
+            ax.set_ylim((0, 5000))
             ax.set_xlim((0, 5))
 
         # ax.set_ylim((0, 20000))
