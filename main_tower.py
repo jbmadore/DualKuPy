@@ -1,10 +1,14 @@
 import time
+import RPi.GPIO as GPIO
 from datetime import datetime
 
 from radar.radar import init_radar, close_radar
 from data_io.file_writer import record_measurement
 
+# Number of records per measurement
 N_RECORD = 150
+# Solid State Relay pin for radar power control
+SSR_PIN = 17  # GPIO17 = pin physique 11
 
 
 def main():
@@ -39,9 +43,37 @@ def main():
             time.sleep(seconds_to_next_hour)
 
 
+def ssr_setup():
+    '''
+    Initiate Solid State Relay (SSR) to control radar power.
+    Set to OFF by default.
+    '''
+    GPIO.setmode(GPIO.BCM)
+    # SSR OFF par défaut au démarrage
+    GPIO.setup(SSR_PIN, GPIO.OUT, initial=GPIO.LOW)
+
+
+def swith_ssr_on():
+    '''
+    Switches the SSR to ON and sleeps for 10 seconds to allow radars to
+    power up.
+    '''
+    GPIO.output(SSR_PIN, GPIO.HIGH)
+    time.sleep(10)
+
+
+def switch_ssr_off():
+    GPIO.output(SSR_PIN, GPIO.LOW)
+    GPIO.cleanup()
+
+
 def run_measurement_routine():
     '''Connects the radar, and perfoms a measurment for each polarization,
     at the given set of angles'''
+    # Power up the radars
+    ssr_setup()
+    swith_ssr_on()
+
     # Define radar IPs and ports
     radar1_ip = '192.168.0.13'
     radar2_ip = '192.168.0.17'
@@ -57,6 +89,7 @@ def run_measurement_routine():
         radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip)
     except Exception as e:
         print(e)
+        switch_ssr_off()
         return
 
     # Get experiment parameters and launch measurement sequence
@@ -68,7 +101,8 @@ def run_measurement_routine():
     # Close both radar connections
     for com in [com1, com2]:
         close_radar(com)
-    print("Radars closed. Going to sleep for 1 hour...")
+    print("Radars closed. Switching off SSR...")
+    switch_ssr_off()
 
 
 def radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip):
@@ -117,12 +151,18 @@ def perform_measurement_sequence(exp_params, commands):
             "polarization": exp_params['POLARIZATION'],
             "cmd": cmd
         }
-        print(f"Starting measurement: {cmd} at polarization {exp_params['POLARIZATION']}")
+        print(
+            f"Starting measurement: {cmd} at polarization "
+            f"{exp_params['POLARIZATION']}"
+        )
         record_measurement(
             num_records=N_RECORD, foldername="/home/grimp/data/dualku_tower/",
             measure_number=1, options=measurement_params
         )
-        print(f"Completed measurement: {cmd} at polarization {exp_params['POLARIZATION']}")
+        print(
+            f"Completed measurement: {cmd} at polarization "
+            f"{exp_params['POLARIZATION']}"
+        )
 
 
 # Run main
