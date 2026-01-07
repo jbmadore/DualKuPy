@@ -5,7 +5,6 @@ from radar.radar import init_radar, close_radar
 from data_io.file_writer import record_measurement
 
 N_RECORD = 150
-MEASUREMENT_INTERVAL_SECONDS = 3600
 
 
 def main():
@@ -15,17 +14,29 @@ def main():
     while True:
         try:
             run_measurement_routine()
+            now = datetime.now()
+            seconds_to_next_hour = (
+                3600 - now.minute * 60 - now.second
+            )
             print(
                 f"[{datetime.now()}] Sleeping for "
-                f"{MEASUREMENT_INTERVAL_SECONDS} s..."
+                f"{seconds_to_next_hour} s..."
             )
-            time.sleep(MEASUREMENT_INTERVAL_SECONDS)
+            time.sleep(seconds_to_next_hour)
         except KeyboardInterrupt:
             print(f"\n[{datetime.now()}] Daemon stopped by user.")
             break
         except Exception as e:
             print(f"[{datetime.now()}] Error during measurement: {e}")
-            time.sleep(MEASUREMENT_INTERVAL_SECONDS)
+            now = datetime.now()
+            seconds_to_next_hour = (
+                3600 - now.minute * 60 - now.second
+            )
+            print(
+                f"[{datetime.now()}] Sleeping for "
+                f"{seconds_to_next_hour} s..."
+            )
+            time.sleep(seconds_to_next_hour)
 
 
 def run_measurement_routine():
