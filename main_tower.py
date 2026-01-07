@@ -1,13 +1,31 @@
+import time
+from datetime import datetime
+
 from radar.radar import init_radar, close_radar
 from data_io.file_writer import record_measurement
 
-num_record_ = 150
+N_RECORD = 150
+MEASUREMENT_INTERVAL_SECONDS = 3600
 
 
 def main():
-    # ToDo: Add timing control for measurements
-    # Run measurement
-    run_measurement_routine()
+    """Main daemon loop - runs a measurement sequence every hour."""
+    print(f"[{datetime.now()}] Starting measurement daemon...")
+
+    while True:
+        try:
+            run_measurement_routine()
+            print(
+                f"[{datetime.now()}] Sleeping for "
+                f"{MEASUREMENT_INTERVAL_SECONDS} s..."
+            )
+            time.sleep(MEASUREMENT_INTERVAL_SECONDS)
+        except KeyboardInterrupt:
+            print(f"\n[{datetime.now()}] Daemon stopped by user.")
+            break
+        except Exception as e:
+            print(f"[{datetime.now()}] Error during measurement: {e}")
+            time.sleep(MEASUREMENT_INTERVAL_SECONDS)
 
 
 def run_measurement_routine():
@@ -94,12 +112,12 @@ def perform_measurement_sequence(exp_params, commands):
                 "polarization": pol,
                 "cmd": cmd
             }
-            print( f"Starting measurement: {cmd} at polarization {pol}")
+            print(f"Starting measurement: {cmd} at polarization {pol}")
             record_measurement(
-                num_records=num_record_, foldername="./data/",
+                num_records=N_RECORD, foldername="./data/",
                 measure_number=1, options=measurement_params
             )
-            print( f"Completed measurement: {cmd} at polarization {pol}")
+            print(f"Completed measurement: {cmd} at polarization {pol}")
 
 
 # Run main
