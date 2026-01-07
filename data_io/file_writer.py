@@ -2,10 +2,13 @@ import datetime
 from Communication import Commands
 from radar import radar
 
-def write_header(file, radar_frequency, site_name, radar_angle, measure_id, polarization, infoParams, frontendParams, radarParams, sensor_temp, additional_info=None):
+
+def write_header(file, radar_frequency, site_name, radar_angle, measure_id,
+                 polarization, infoParams, frontendParams, radarParams,
+                 sensor_temp, timestamp, additional_info=None):
     """
     Writes a detailed header for a measurement session to the file, including radar configuration and parameters.
-    
+
     Parameters:
         file (file object): Open file object to write the header to.
         radar_frequency (float): Frequency of the radar in GHz.
@@ -16,14 +19,11 @@ def write_header(file, radar_frequency, site_name, radar_angle, measure_id, pola
         infoParams (InfoParameters): Instance containing general information about the radar module (e.g., device number, firmware version).
         frontendParams (FrontendParameters): Instance containing frontend-specific parameters (e.g., frequency range, signal type, channel selection).
         radarParams (RadarParameters): Instance containing radar measurement and processing parameters (e.g., measurement procedure, radar cube settings).
+        timestamp (str): Timestamp of the measurement session.
         additional_info (dict, optional): Dictionary with any additional information (e.g., location, gain, notes).
-    
     """
-    
-    # Get radar informations
 
-    
-    timestamp = datetime.datetime.now().isoformat()
+    # Get radar informations
     file.write("# === Measurement Header ===\n")
     file.write(f"# Radar Frequency: {radar_frequency}\n")
     file.write(f"# Site Name: {site_name}\n")
@@ -31,14 +31,14 @@ def write_header(file, radar_frequency, site_name, radar_angle, measure_id, pola
     file.write(f"# Measurement ID: {measure_id}\n")
     file.write(f"# Polarization: {polarization}\n")
     file.write(f"# Timestamp: {timestamp}\n")
-    
+
     # Device and firmware parameters
     file.write(f"# Device Number: {infoParams.deviceNumber}\n")
     file.write(f"# Frontend Connected: {infoParams.frontendConnected}\n")
     file.write(f"# Firmware Version: {infoParams.fwVersion}\n")
     file.write(f"# Firmware Revision: {infoParams.fwRevision}\n")
     file.write(f"# Firmware Date: {infoParams.fwDate}\n")
-    
+
     # Frontend parameters
     file.write(f"# Min Frequency: {frontendParams.MinFrequency}\n")
     file.write(f"# Max Frequency: {frontendParams.MaxFrequency}\n")
@@ -52,7 +52,7 @@ def write_header(file, radar_frequency, site_name, radar_angle, measure_id, pola
     file.write(f"# Ramp Reset: {frontendParams.RampReset}\n")
     file.write(f"# Ramp Delay: {frontendParams.RampDelay}\n")
     file.write(f"# Sensor temperature: {sensor_temp}\n")
-    
+
     # Radar parameters
     file.write(f"# Radar Cube: {radarParams.RadarCube}\n")
     file.write(f"# Processing: {radarParams.Processing}\n")
@@ -64,18 +64,14 @@ def write_header(file, radar_frequency, site_name, radar_angle, measure_id, pola
 
     file.write("# ==========================\n\n")
     file.write(f"# Comments: {additional_info}\n")
-    # Write additional information if provided
-    # if additional_info:
-    #     for key, value in additional_info.items():
-    #         file.write(f"# {key}: {value}\n")
-    
+
     file.write("# ==========================\n\n")
 
 
 def write_chirp_to_file(file, chirp_number, timestamp, data):
     """
     Writes a single chirp's data to the file.
-    
+
     Parameters:
         file (file object): Open file object to write to.
         chirp_number (int): Chirp number within the measurement.
@@ -92,7 +88,7 @@ def write_chirp_to_file(file, chirp_number, timestamp, data):
 def record_measurement(num_records=50, foldername="./data/", measure_number=1, options=None):
     """
     Records a measurement consisting of `num_records` chirps, writing both header and chirp data.
-    
+
     Parameters:
         num_records (int): Number of chirps to record in one measurement.
         radar (int): Radar ID or configuration (0 to record both radars).
@@ -114,48 +110,43 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
     # Extract parameters from options with defaults if they aren't provided
     cmd = options.get("cmd")
     sensor_temp = cmd.executeCmd(Commands.CMD_GET_FE_SENSORS)
-    #sensor_temp = sensor_temp["FeSensor_1"]
     site_name = options.get("site_name")
-    measure_id = options.get("measure_id")
     radar_angle = options.get("radar_angle")
-    # radar_frequency = options.get("radar_frequency")
-    # infoParams = options.get("infoParams")
-    # frontendParams = options.get("frontendParams")
-    # radarParams = options.get("radarParams")
-    polarization = options.get("polarization", "Vertical")  # Default to "Vertical" if not provided
-    additional_info = options.get("additional_info")
-    
+    polarization = options.get("polarization")
+
     infoParams, frontendParams, radarParams = radar.fetch_radar_info(cmd)
-    
+
     if frontendParams.MinFrequency == 12500000:
         radar_frequency = '13GHz'
-        
+
     elif frontendParams.MinFrequency == 16500000:
         radar_frequency = '17GHz'
-    
+
     # Get current date and time for filename uniqueness
     date_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     # Build filename string
-    filename = radar_frequency + '_' + site_name + '_' + str(measure_id) + '_' + polarization + '_' + radar_angle + 'deg_' + date_str + '.txt'
-    
+    filename = (radar_frequency + '_' + site_name + '_' + polarization + '_' +
+                radar_angle + 'deg_' + date_str + '.txt')
+
     with open(foldername + filename, 'w') as file:
         # Write the header for this measurement
         write_header(
             file, radar_frequency=radar_frequency, site_name=site_name,
-            radar_angle=radar_angle, measure_id=measure_number, 
-            polarization=polarization, infoParams=infoParams, 
-            frontendParams=frontendParams, radarParams=radarParams, 
-            additional_info=additional_info,sensor_temp=sensor_temp,
+            radar_angle=radar_angle, measure_id=measure_number,
+            polarization=polarization, infoParams=infoParams,
+            frontendParams=frontendParams, radarParams=radarParams,
+            sensor_temp=sensor_temp, timestamp=date_str,
         )
-        
+
         # Record and write each chirp
         for chirp_number in range(1, num_records + 1):
-            
+
             timestamp = datetime.datetime.now().isoformat()
-            
+
             data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA)
-            write_chirp_to_file(file,chirp_number=chirp_number, timestamp=timestamp, data=data)
-            
+            write_chirp_to_file(
+                file, chirp_number=chirp_number,
+                timestamp=timestamp, data=data
+            )
 
     print(f"Measurement {measure_number} recorded to {filename}")
-

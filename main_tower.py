@@ -6,23 +6,20 @@ num_record_ = 150
 
 def main():
     # ToDo: Add timing control for measurements
-    # Read measurement configuration from file, not user input
-
     # Run measurement
-    run_measurement()
+    run_measurement_routine()
 
 
-def run_measurement():
+def run_measurement_routine():
     '''Connects the radar, and perfoms a measurment for each polarization,
     at the given set of angles'''
-    # Connect the radars
     # Define radar IPs and ports
     radar1_ip = '192.168.0.13'
     radar2_ip = '192.168.0.17'
     radar1_host_port = 4100
     radar2_host_port = 4101
 
-    # Initialize each radar
+    # Connect and initialize each radar
     com1, cmd1, ok1 = init_radar(radar1_ip, host_port=radar1_host_port)
     com2, cmd2, ok2 = init_radar(radar2_ip, host_port=radar2_host_port)
 
@@ -33,12 +30,16 @@ def run_measurement():
         print(e)
         return
 
-    # Take measurements for both radars
-    take_measurement((cmd1, cmd2), "Radar 13GHz and 17GHz")
-
-    # Close radar connections
-    close_radar(com1)
-    close_radar(com2)
+    # Get experiment parameters and launch measurement sequence
+    print("Acquiring experiment parameters...")
+    exp_params = get_experiment_parameters()
+    print("Experiment parameters acquired. Starting measurement sequence...")
+    perform_measurement_sequence(exp_params, [cmd1, cmd2])
+    print("Measurement sequence completed. Closing radars...")
+    # Close both radar connections
+    for com in [com1, com2]:
+        close_radar(com)
+    print("Radars closed. Going to sleep for 1 hour...")
 
 
 def radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip):
@@ -58,50 +59,47 @@ def radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip):
         raise Exception("Failed to initialize both radars. Exiting...")
 
 
-def gather_recording_info():
-    """Prompt for measurement information once."""
-    site_name = input("Enter the site name: ")
-    measure_id = input("Enter the measure_id: ")
-    radar_angle = input("Enter the radar angle: ")
-    polarization = input(
-        "Enter the measurement polarization (vertical or horizontal): ")
-    additional_info = input("Enter comments: ")
-    return {
-        "site_name": site_name,
-        "radar_angle": radar_angle,
-        "polarization": polarization,
-        "measure_id": measure_id,
-        "additional_info": additional_info
-    }
+def get_experiment_parameters(exp_params_file="experiment_params.env"):
+    """Get recording metadata from the experiment parameters file."""
+    with open(exp_params_file, 'r') as f:
+        lines = f.readlines()
+
+    params = {}
+    for line in lines:
+        key, value = line.strip().split('=')
+        if value.startswith('['):
+            params[key] = value.strip("[]").split(',')
+        else:
+            params[key] = value
+
+    return params
 
 
-def take_measurement(cmd, radar_label):
-    """Takes a measurement for the specified radar when paused."""
-    recording_info = gather_recording_info()
-    print(f"Starting measurement for {radar_label}")
+def perform_measurement_sequence(exp_params, commands):
+    """
+    Perform a measurement sequence for the given set of polarizations and
+    radars.
+    Args:
+        exp_params (dict): Experiment parameters including site name, radar
+                           angle, polarization, etc.
+        commands (list): List of radar command objects.
+    """
 
-    options_1 = {
-        "cmd": cmd[0],
-        "site_name": '',  # Placeholder values
-        "measure_id": '',
-        "polarization": '',
-        "additional_info": ""
-    }
-    options_2 = {
-        "cmd": cmd[1],
-        "site_name": '',  # Placeholder values
-        "measure_id": '',
-        "polarization": '',
-        "additional_info": ""
-    }
-    options_1.update(recording_info)
-    options_2.update(recording_info)
-    record_measurement(
-        num_records=num_record_, foldername="./data/",
-        measure_number=1, options=options_1)
-    record_measurement(
-        num_records=num_record_, foldername="./data/",
-        measure_number=1, options=options_2)
+    for pol in exp_params['POLARIZATION']:
+        # Take measurements for both radars
+        for cmd in commands:
+            measurement_params = {
+                "site_name": exp_params['SITE_NAME'],
+                "radar_angle": exp_params['RADAR_ANGLE'],
+                "polarization": pol,
+                "cmd": cmd
+            }
+            print( f"Starting measurement: {cmd} at polarization {pol}")
+            record_measurement(
+                num_records=num_record_, foldername="./data/",
+                measure_number=1, options=measurement_params
+            )
+            print( f"Completed measurement: {cmd} at polarization {pol}")
 
 
 # Run main
