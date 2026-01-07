@@ -1,3 +1,4 @@
+import os
 import time
 import RPi.GPIO as GPIO
 from datetime import datetime
@@ -9,6 +10,9 @@ from data_io.file_writer import record_measurement
 N_RECORD = 150
 # Solid State Relay pin for radar power control
 SSR_PIN = 17  # GPIO17 = pin physique 11
+# Data storage paths
+USB_DATA_PATH = "/mnt/usb/dualku_usb/"
+LOCAL_DATA_PATH = "/home/grimp/data/dualku_tower/"
 
 
 def main():
@@ -95,13 +99,13 @@ def run_measurement_routine():
     # Get experiment parameters and launch measurement sequence
     print("Acquiring experiment parameters...")
     exp_params = get_experiment_parameters()
-    print("Experiment parameters acquired. Starting measurement sequence...")
+    print("Experiment parameters acquired. \nStarting measurement sequence...")
     perform_measurement_sequence(exp_params, [cmd1, cmd2])
-    print("Measurement sequence completed. Closing radars...")
+    print("Measurement sequence completed. \nClosing radars...")
     # Close both radar connections
     for com in [com1, com2]:
         close_radar(com)
-    print("Radars closed. Switching off SSR...")
+    print("Radars closed. \nSwitching off SSR...")
     switch_ssr_off()
 
 
@@ -137,8 +141,7 @@ def get_experiment_parameters(exp_params_file="experiment_params.env"):
 
 def perform_measurement_sequence(exp_params, commands):
     """
-    Perform a measurement sequence for the given set of polarizations and
-    radars.
+    Perform a measurement sequence for the given set of radars.
     Args:
         exp_params (dict): Experiment parameters including site name, radar
                            angle, polarization, etc.
@@ -151,18 +154,21 @@ def perform_measurement_sequence(exp_params, commands):
             "polarization": exp_params['POLARIZATION'],
             "cmd": cmd
         }
-        print(
-            f"Starting measurement: {cmd} at polarization "
-            f"{exp_params['POLARIZATION']}"
-        )
+
+        # Check if USB key is mounted, otherwise use local storage
+        if os.path.exists(USB_DATA_PATH):
+            data_path = USB_DATA_PATH
+            print(f"Using USB storage: {data_path}")
+        else:
+            data_path = LOCAL_DATA_PATH
+            print(f"USB not found, using local storage: {data_path}")
+
+        print(f"Starting measurement: {cmd}")
         record_measurement(
-            num_records=N_RECORD, foldername="/home/grimp/data/dualku_tower/",
+            num_records=N_RECORD, foldername=data_path,
             measure_number=1, options=measurement_params
         )
-        print(
-            f"Completed measurement: {cmd} at polarization "
-            f"{exp_params['POLARIZATION']}"
-        )
+        print(f"Completed measurement: {cmd}")
 
 
 # Run main
