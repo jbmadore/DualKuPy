@@ -132,8 +132,11 @@ def record_measurement(num_records=50, foldername="./data/", measure_number=1, o
         
     elif frontendParams.MinFrequency == 16500000:
         radar_frequency = '17GHz'
-        
-    filename = radar_frequency + '_' + site_name + '_' + str(measure_id) + '_' + polarization + '_' + radar_angle + 'deg.txt'
+    
+    # Get current date and time for filename uniqueness
+    date_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Build filename string
+    filename = radar_frequency + '_' + site_name + '_' + str(measure_id) + '_' + polarization + '_' + radar_angle + 'deg_' + date_str + '.txt'
     
     with open(foldername + filename, 'w') as file:
         # Write the header for this measurement

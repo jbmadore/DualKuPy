@@ -6,7 +6,7 @@ num_record_ = 150
 
 def main():
     # ToDo: Add timing control for measurements
-    # ToDo: Add timestamp to filenames in record_measurement()
+    # Read measurement configuration from file, not user input
 
     # Run measurement
     run_measurement()
