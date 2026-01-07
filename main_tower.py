@@ -85,10 +85,7 @@ def get_experiment_parameters(exp_params_file="experiment_params.env"):
     params = {}
     for line in lines:
         key, value = line.strip().split('=')
-        if value.startswith('['):
-            params[key] = value.strip("[]").split(',')
-        else:
-            params[key] = value
+        params[key] = value
 
     return params
 
@@ -102,22 +99,19 @@ def perform_measurement_sequence(exp_params, commands):
                            angle, polarization, etc.
         commands (list): List of radar command objects.
     """
-
-    for pol in exp_params['POLARIZATION']:
-        # Take measurements for both radars
-        for cmd in commands:
-            measurement_params = {
-                "site_name": exp_params['SITE_NAME'],
-                "radar_angle": exp_params['RADAR_ANGLE'],
-                "polarization": pol,
-                "cmd": cmd
-            }
-            print(f"Starting measurement: {cmd} at polarization {pol}")
-            record_measurement(
-                num_records=N_RECORD, foldername="~/data/dualku_tower/",
-                measure_number=1, options=measurement_params
-            )
-            print(f"Completed measurement: {cmd} at polarization {pol}")
+    for cmd in commands:
+        measurement_params = {
+            "site_name": exp_params['SITE_NAME'],
+            "radar_angle": exp_params['RADAR_ANGLE'],
+            "polarization": exp_params['POLARIZATION'],
+            "cmd": cmd
+        }
+        print(f"Starting measurement: {cmd} at polarization {exp_params['POLARIZATION']}")
+        record_measurement(
+            num_records=N_RECORD, foldername="/home/grimp/data/dualku_tower/",
+            measure_number=1, options=measurement_params
+        )
+        print(f"Completed measurement: {cmd} at polarization {exp_params['POLARIZATION']}")
 
 
 # Run main
