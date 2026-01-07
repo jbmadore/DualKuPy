@@ -11,7 +11,7 @@ N_RECORD = 150
 # Solid State Relay pin for radar power control
 SSR_PIN = 17  # GPIO17 = pin physique 11
 # Data storage paths
-USB_DATA_PATH = "/mnt/usb/dualku_usb/"
+USB_DATA_PATH = "/mnt/dualku_usb/"
 LOCAL_DATA_PATH = "/home/grimp/data/dualku_tower/"
 
 
