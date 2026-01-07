@@ -1,15 +1,6 @@
-import threading
 from radar.radar import init_radar, close_radar
 from data_io.file_writer import record_measurement
-from queue import Queue
-import os
 
-os.environ["QT_QPA_PLATFORM"] = "xcb"
-
-# Global flags and settings
-running = False  # Controls display running state
-recording_lock = threading.Lock()
-plot_update_queue = Queue()
 num_record_ = 150
 
 
