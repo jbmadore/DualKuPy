@@ -114,7 +114,7 @@ def perform_measurement_sequence(exp_params, commands):
             }
             print(f"Starting measurement: {cmd} at polarization {pol}")
             record_measurement(
-                num_records=N_RECORD, foldername="~/grimp/data/dualku_tower/",
+                num_records=N_RECORD, foldername="~/data/dualku_tower/",
                 measure_number=1, options=measurement_params
             )
             print(f"Completed measurement: {cmd} at polarization {pol}")
