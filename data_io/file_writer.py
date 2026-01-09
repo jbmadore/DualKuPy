@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from Communication import Commands
 from radar import radar
 
@@ -123,7 +123,9 @@ def record_measurement(num_records=50, foldername="/home/grimp/data/dualku_tower
         radar_frequency = '17GHz'
 
     # Get current date and time for filename uniqueness
-    date_str = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+    # Convert local time to UTC
+    now = datetime.now().astimezone(timezone.utc)
+    date_str = now.strftime("%Y%m%d_%H%M%S")
     # Build filename string
     filename = (radar_frequency + '_' + site_name + '_' + polarization + '_' +
                 radar_angle + 'deg_' + date_str + '.txt')
@@ -141,7 +143,7 @@ def record_measurement(num_records=50, foldername="/home/grimp/data/dualku_tower
         # Record and write each chirp
         for chirp_number in range(1, num_records + 1):
 
-            timestamp = datetime.datetime.now().isoformat()
+            timestamp = datetime.now().isoformat()
 
             data = cmd.executeCmd(Commands.CMD_READ_RAW_DATA)
             write_chirp_to_file(
