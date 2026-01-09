@@ -91,7 +91,9 @@ def run_measurement_routine():
 
     # Check each radar's connection status and print the IP of connected radars
     try:
-        radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip)
+        commands = radar_connection_sanity_check(
+            ok1, ok2, radar1_ip, radar2_ip, cmd1, cmd2
+        )
     except Exception as e:
         print(e)
         switch_ssr_off()
@@ -101,7 +103,7 @@ def run_measurement_routine():
     print("Acquiring experiment parameters...")
     exp_params = get_experiment_parameters()
     print("Experiment parameters acquired. \nStarting measurement sequence...")
-    perform_measurement_sequence(exp_params, [cmd1, cmd2])
+    perform_measurement_sequence(exp_params, commands)
     print("Measurement sequence completed. \nClosing radars...")
     # Close both radar connections
     for com in [com1, com2]:
@@ -110,19 +112,26 @@ def run_measurement_routine():
     switch_ssr_off()
 
 
-def radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip):
+def radar_connection_sanity_check(ok1, ok2, radar1_ip, radar2_ip, cmd1, cmd2):
     '''Checks if the radars are connected properly'''
     if ok1 and ok2:
         print(f"Radar 13GHz connected at IP address {radar1_ip}")
         print(f"Radar 17GHz connected at IP address {radar2_ip}")
 
+        return [cmd1, cmd2]
+
     elif ok1 and not ok2:
         print(f"Radar 13GHz connected at IP address {radar1_ip}")
         print(f"Failed 17GHz to connect radar at IP address {radar2_ip}")
 
+        return [cmd1]
+
     elif ok2 and not ok1:
         print(f"Radar 17GHz connected at IP address {radar2_ip}")
         print(f"Failed 13GHz to connect radar at IP address {radar1_ip}")
+
+        return [cmd2]
+
     else:
         raise Exception("Failed to initialize both radars. Exiting...")
 
