@@ -32,6 +32,7 @@ def main():
             )
             time.sleep(seconds_to_next_hour)
         except KeyboardInterrupt:
+            switch_ssr_off()
             print(f"\n[{datetime.now()}] Daemon stopped by user.")
             break
         except Exception as e:
